@@ -78,8 +78,8 @@
             row.innerHTML = `
                     <td>${country.name}</td>
                     <td><time>${getCurrentTime(country.timezone)}</time></td>
-                    <td>${country.prefix}</td>
-                    <td>${country.currency}</td>
+                    <td>${country.prefix??''}</td>
+                    <td>${country.currency??''}</td>
                     <td>${country.tld??''}</td>
                 `;
             tableBody.appendChild(row);
