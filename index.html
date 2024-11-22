@@ -18,7 +18,7 @@
         border: 1px solid #ddd;
         padding: 10px;
         text-align: left;
-      }
+      } 
       th {
         background-color: #f4f4f4;
       }
@@ -29,12 +29,20 @@
   </head>
   <body>
     <h1>Countries, Phone Prefixes, and Current Time</h1>
+    <div style="position: fixed; top: 0px; background-color: lightgreen; padding: 10px;" >
+      <label>
+        Current time
+        <input id="current-time" type="datetime-local" />
+      </label>
+    </div>
     <table>
       <thead>
         <tr>
           <th>Country</th>
-          <th>Phone Prefix</th>
           <th>Current Time</th>
+          <th>Phone Prefix</th>
+          <th>Currency</th>
+          <th>TLD</th>
         </tr>
       </thead>
       <tbody id="countryTable">
@@ -43,315 +51,12 @@
     </table>
 
     <script>
-      const countries = [
-        { name: "Afghanistan", timezone: "Asia/Kabul", prefix: "+93" },
-        { name: "Albania", timezone: "Europe/Tirane", prefix: "+355" },
-        { name: "Algeria", timezone: "Africa/Algiers", prefix: "+213" },
-        { name: "Andorra", timezone: "Europe/Andorra", prefix: "+376" },
-        { name: "Angola", timezone: "Africa/Luanda", prefix: "+244" },
-        {
-          name: "Argentina",
-          timezone: "America/Argentina/Buenos_Aires",
-          prefix: "+54",
-        },
-        { name: "Australia", timezone: "Australia/Sydney", prefix: "+61" },
-        { name: "Austria", timezone: "Europe/Vienna", prefix: "+43" },
-        { name: "Bangladesh", timezone: "Asia/Dhaka", prefix: "+880" },
-        { name: "Belgium", timezone: "Europe/Brussels", prefix: "+32" },
-        { name: "Brazil", timezone: "America/Sao_Paulo", prefix: "+55" },
-        { name: "Canada", timezone: "America/Toronto", prefix: "+1" },
-        { name: "Chile", timezone: "America/Santiago", prefix: "+56" },
-        { name: "China", timezone: "Asia/Shanghai", prefix: "+86" },
-        { name: "Colombia", timezone: "America/Bogota", prefix: "+57" },
-        {
-          name: "Czech Republic",
-          timezone: "Europe/Prague",
-          prefix: "+420",
-        },
-        { name: "Denmark", timezone: "Europe/Copenhagen", prefix: "+45" },
-        { name: "Egypt", timezone: "Africa/Cairo", prefix: "+20" },
-        { name: "Finland", timezone: "Europe/Helsinki", prefix: "+358" },
-        { name: "France", timezone: "Europe/Paris", prefix: "+33" },
-        { name: "Germany", timezone: "Europe/Berlin", prefix: "+49" },
-        { name: "Greece", timezone: "Europe/Athens", prefix: "+30" },
-        { name: "India", timezone: "Asia/Kolkata", prefix: "+91" },
-        { name: "Indonesia", timezone: "Asia/Jakarta", prefix: "+62" },
-        { name: "Iran", timezone: "Asia/Tehran", prefix: "+98" },
-        { name: "Iraq", timezone: "Asia/Baghdad", prefix: "+964" },
-        { name: "Ireland", timezone: "Europe/Dublin", prefix: "+353" },
-        { name: "Israel", timezone: "Asia/Jerusalem", prefix: "+972" },
-        { name: "Italy", timezone: "Europe/Rome", prefix: "+39" },
-        { name: "Japan", timezone: "Asia/Tokyo", prefix: "+81" },
-        { name: "Kenya", timezone: "Africa/Nairobi", prefix: "+254" },
-        { name: "Malaysia", timezone: "Asia/Kuala_Lumpur", prefix: "+60" },
-        { name: "Mexico", timezone: "America/Mexico_City", prefix: "+52" },
-        { name: "Netherlands", timezone: "Europe/Amsterdam", prefix: "+31" },
-        { name: "New Zealand", timezone: "Pacific/Auckland", prefix: "+64" },
-        { name: "Nigeria", timezone: "Africa/Lagos", prefix: "+234" },
-        { name: "Norway", timezone: "Europe/Oslo", prefix: "+47" },
-        { name: "Pakistan", timezone: "Asia/Karachi", prefix: "+92" },
-        { name: "Philippines", timezone: "Asia/Manila", prefix: "+63" },
-        { name: "Poland", timezone: "Europe/Warsaw", prefix: "+48" },
-        { name: "Portugal", timezone: "Europe/Lisbon", prefix: "+351" },
-        { name: "Russia", timezone: "Europe/Moscow", prefix: "+7" },
-        { name: "Saudi Arabia", timezone: "Asia/Riyadh", prefix: "+966" },
-        { name: "Singapore", timezone: "Asia/Singapore", prefix: "+65" },
-        {
-          name: "South Africa",
-          timezone: "Africa/Johannesburg",
-          prefix: "+27",
-        },
-        { name: "South Korea", timezone: "Asia/Seoul", prefix: "+82" },
-        { name: "Spain", timezone: "Europe/Madrid", prefix: "+34" },
-        { name: "Sweden", timezone: "Europe/Stockholm", prefix: "+46" },
-        { name: "Switzerland", timezone: "Europe/Zurich", prefix: "+41" },
-        { name: "Thailand", timezone: "Asia/Bangkok", prefix: "+66" },
-        { name: "Turkey", timezone: "Europe/Istanbul", prefix: "+90" },
-        {
-          name: "United Arab Emirates",
-          timezone: "Asia/Dubai",
-          prefix: "+971",
-        },
-        { name: "United Kingdom", timezone: "Europe/London", prefix: "+44" },
-        {
-          name: "United States",
-          timezone: "America/New_York",
-          prefix: "+1",
-        },
-        { name: "Vietnam", timezone: "Asia/Ho_Chi_Minh", prefix: "+84" },
-        { name: "Armenia", timezone: "Asia/Yerevan", prefix: "+374" },
-        { name: "Bahrain", timezone: "Asia/Bahrain", prefix: "+973" },
-        { name: "Barbados", timezone: "America/Barbados", prefix: "+1-246" },
-        { name: "Belarus", timezone: "Europe/Minsk", prefix: "+375" },
-        { name: "Belize", timezone: "America/Belize", prefix: "+501" },
-        { name: "Benin", timezone: "Africa/Porto-Novo", prefix: "+229" },
-        { name: "Bhutan", timezone: "Asia/Thimphu", prefix: "+975" },
-        { name: "Botswana", timezone: "Africa/Gaborone", prefix: "+267" },
-        { name: "Brunei", timezone: "Asia/Brunei", prefix: "+673" },
-        {
-          name: "Burkina Faso",
-          timezone: "Africa/Ouagadougou",
-          prefix: "+226",
-        },
-        { name: "Burundi", timezone: "Africa/Bujumbura", prefix: "+257" },
-        { name: "Cambodia", timezone: "Asia/Phnom_Penh", prefix: "+855" },
-        { name: "Cameroon", timezone: "Africa/Douala", prefix: "+237" },
-        {
-          name: "Cape Verde",
-          timezone: "Atlantic/Cape_Verde",
-          prefix: "+238",
-        },
-        {
-          name: "Central African Republic",
-          timezone: "Africa/Bangui",
-          prefix: "+236",
-        },
-        { name: "Chad", timezone: "Africa/N'Djamena", prefix: "+235" },
-        { name: "Comoros", timezone: "Indian/Comoro", prefix: "+269" },
-        { name: "Cuba", timezone: "America/Havana", prefix: "+53" },
-        { name: "Djibouti", timezone: "Africa/Djibouti", prefix: "+253" },
-        { name: "Dominica", timezone: "America/Dominica", prefix: "+1-767" },
-        { name: "Ecuador", timezone: "America/Guayaquil", prefix: "+593" },
-        { name: "Eritrea", timezone: "Africa/Asmara", prefix: "+291" },
-        { name: "Eswatini", timezone: "Africa/Mbabane", prefix: "+268" },
-        { name: "Ethiopia", timezone: "Africa/Addis_Ababa", prefix: "+251" },
-        { name: "Fiji", timezone: "Pacific/Fiji", prefix: "+679" },
-        { name: "Gabon", timezone: "Africa/Libreville", prefix: "+241" },
-        { name: "Gambia", timezone: "Africa/Banjul", prefix: "+220" },
-        { name: "Georgia", timezone: "Asia/Tbilisi", prefix: "+995" },
-        { name: "Grenada", timezone: "America/Grenada", prefix: "+1-473" },
-        { name: "Guatemala", timezone: "America/Guatemala", prefix: "+502" },
-        { name: "Guinea", timezone: "Africa/Conakry", prefix: "+224" },
-        { name: "Guinea-Bissau", timezone: "Africa/Bissau", prefix: "+245" },
-        { name: "Guyana", timezone: "America/Guyana", prefix: "+592" },
-        {
-          name: "Haiti",
-          timezone: "America/Port-au-Prince",
-          prefix: "+509",
-        },
-        {
-          name: "Honduras",
-          timezone: "America/Tegucigalpa",
-          prefix: "+504",
-        },
-        { name: "Iceland", timezone: "Atlantic/Reykjavik", prefix: "+354" },
-        { name: "Jamaica", timezone: "America/Jamaica", prefix: "+1-876" },
-        { name: "Jordan", timezone: "Asia/Amman", prefix: "+962" },
-        { name: "Kazakhstan", timezone: "Asia/Almaty", prefix: "+7" },
-        { name: "Kuwait", timezone: "Asia/Kuwait", prefix: "+965" },
-        { name: "Kyrgyzstan", timezone: "Asia/Bishkek", prefix: "+996" },
-        { name: "Laos", timezone: "Asia/Vientiane", prefix: "+856" },
-        { name: "Latvia", timezone: "Europe/Riga", prefix: "+371" },
-        { name: "Lebanon", timezone: "Asia/Beirut", prefix: "+961" },
-        { name: "Lesotho", timezone: "Africa/Maseru", prefix: "+266" },
-        { name: "Liberia", timezone: "Africa/Monrovia", prefix: "+231" },
-        { name: "Libya", timezone: "Africa/Tripoli", prefix: "+218" },
-        { name: "Liechtenstein", timezone: "Europe/Vaduz", prefix: "+423" },
-        { name: "Lithuania", timezone: "Europe/Vilnius", prefix: "+370" },
-        {
-          name: "Luxembourg",
-          timezone: "Europe/Luxembourg",
-          prefix: "+352",
-        },
-        {
-          name: "Madagascar",
-          timezone: "Indian/Antananarivo",
-          prefix: "+261",
-        },
-        { name: "Malawi", timezone: "Africa/Blantyre", prefix: "+265" },
-        { name: "Malaysia", timezone: "Asia/Kuala_Lumpur", prefix: "+60" },
-        { name: "Maldives", timezone: "Indian/Maldives", prefix: "+960" },
-        { name: "Mali", timezone: "Africa/Bamako", prefix: "+223" },
-        { name: "Malta", timezone: "Europe/Malta", prefix: "+356" },
-        {
-          name: "Marshall Islands",
-          timezone: "Pacific/Majuro",
-          prefix: "+692",
-        },
-        {
-          name: "Mauritania",
-          timezone: "Africa/Nouakchott",
-          prefix: "+222",
-        },
-        { name: "Mauritius", timezone: "Indian/Mauritius", prefix: "+230" },
-        { name: "Mexico", timezone: "America/Mexico_City", prefix: "+52" },
-        { name: "Micronesia", timezone: "Pacific/Ponape", prefix: "+691" },
-        { name: "Moldova", timezone: "Europe/Chisinau", prefix: "+373" },
-        { name: "Monaco", timezone: "Europe/Monaco", prefix: "+377" },
-        { name: "Mongolia", timezone: "Asia/Ulaanbaatar", prefix: "+976" },
-        { name: "Montenegro", timezone: "Europe/Podgorica", prefix: "+382" },
-        { name: "Morocco", timezone: "Africa/Casablanca", prefix: "+212" },
-        { name: "Mozambique", timezone: "Africa/Maputo", prefix: "+258" },
-        { name: "Namibia", timezone: "Africa/Windhoek", prefix: "+264" },
-        { name: "Nauru", timezone: "Pacific/Nauru", prefix: "+674" },
-        { name: "Nepal", timezone: "Asia/Kathmandu", prefix: "+977" },
-        { name: "Netherlands", timezone: "Europe/Amsterdam", prefix: "+31" },
-        { name: "New Zealand", timezone: "Pacific/Auckland", prefix: "+64" },
-        { name: "Nicaragua", timezone: "America/Managua", prefix: "+505" },
-        { name: "Niger", timezone: "Africa/Niamey", prefix: "+227" },
-        { name: "Nigeria", timezone: "Africa/Lagos", prefix: "+234" },
-        {
-          name: "North Macedonia",
-          timezone: "Europe/Skopje",
-          prefix: "+389",
-        },
-        { name: "Norway", timezone: "Europe/Oslo", prefix: "+47" },
-        { name: "Oman", timezone: "Asia/Muscat", prefix: "+968" },
-        { name: "Pakistan", timezone: "Asia/Karachi", prefix: "+92" },
-        { name: "Palau", timezone: "Pacific/Palau", prefix: "+680" },
-        { name: "Panama", timezone: "America/Panama", prefix: "+507" },
-        {
-          name: "Papua New Guinea",
-          timezone: "Pacific/Port_Moresby",
-          prefix: "+675",
-        },
-        { name: "Paraguay", timezone: "America/Asuncion", prefix: "+595" },
-        { name: "Peru", timezone: "America/Lima", prefix: "+51" },
-        { name: "Philippines", timezone: "Asia/Manila", prefix: "+63" },
-        { name: "Poland", timezone: "Europe/Warsaw", prefix: "+48" },
-        { name: "Portugal", timezone: "Europe/Lisbon", prefix: "+351" },
-        {
-          name: "Puerto Rico",
-          timezone: "America/Puerto_Rico",
-          prefix: "+1-787",
-        },
-        { name: "Qatar", timezone: "Asia/Qatar", prefix: "+974" },
-        { name: "Romania", timezone: "Europe/Bucharest", prefix: "+40" },
-        { name: "Russia", timezone: "Europe/Moscow", prefix: "+7" },
-        { name: "Rwanda", timezone: "Africa/Kigali", prefix: "+250" },
-        {
-          name: "Saint Kitts and Nevis",
-          timezone: "America/St_Kitts",
-          prefix: "+1-869",
-        },
-        { name: "Saint Lucia", timezone: "America/St_Lucia", prefix: "+1-758" },
-        {
-          name: "Saint Vincent and the Grenadines",
-          timezone: "America/St_Vincent",
-          prefix: "+1-784",
-        },
-        { name: "Samoa", timezone: "Pacific/Apia", prefix: "+685" },
-        { name: "San Marino", timezone: "Europe/San_Marino", prefix: "+378" },
-        {
-          name: "Sao Tome and Principe",
-          timezone: "Africa/Sao_Tome",
-          prefix: "+239",
-        },
-        { name: "Saudi Arabia", timezone: "Asia/Riyadh", prefix: "+966" },
-        { name: "Senegal", timezone: "Africa/Dakar", prefix: "+221" },
-        { name: "Serbia", timezone: "Europe/Belgrade", prefix: "+381" },
-        { name: "Seychelles", timezone: "Indian/Mahe", prefix: "+248" },
-        { name: "Sierra Leone", timezone: "Africa/Freetown", prefix: "+232" },
-        { name: "Singapore", timezone: "Asia/Singapore", prefix: "+65" },
-        { name: "Slovakia", timezone: "Europe/Bratislava", prefix: "+421" },
-        { name: "Slovenia", timezone: "Europe/Ljubljana", prefix: "+386" },
-        {
-          name: "Solomon Islands",
-          timezone: "Pacific/Guadalcanal",
-          prefix: "+677",
-        },
-        { name: "Somalia", timezone: "Africa/Mogadishu", prefix: "+252" },
-        {
-          name: "South Africa",
-          timezone: "Africa/Johannesburg",
-          prefix: "+27",
-        },
-        { name: "South Korea", timezone: "Asia/Seoul", prefix: "+82" },
-        { name: "South Sudan", timezone: "Africa/Juba", prefix: "+211" },
-        { name: "Spain", timezone: "Europe/Madrid", prefix: "+34" },
-        { name: "Sri Lanka", timezone: "Asia/Colombo", prefix: "+94" },
-        { name: "Sudan", timezone: "Africa/Khartoum", prefix: "+249" },
-        { name: "Suriname", timezone: "America/Paramaribo", prefix: "+597" },
-        { name: "Sweden", timezone: "Europe/Stockholm", prefix: "+46" },
-        { name: "Switzerland", timezone: "Europe/Zurich", prefix: "+41" },
-        { name: "Syria", timezone: "Asia/Damascus", prefix: "+963" },
-        { name: "Taiwan", timezone: "Asia/Taipei", prefix: "+886" },
-        { name: "Tajikistan", timezone: "Asia/Dushanbe", prefix: "+992" },
-        { name: "Tanzania", timezone: "Africa/Dar_es_Salaam", prefix: "+255" },
-        { name: "Thailand", timezone: "Asia/Bangkok", prefix: "+66" },
-        { name: "Togo", timezone: "Africa/Lome", prefix: "+228" },
-        { name: "Tokelau", timezone: "Pacific/Fakaofo", prefix: "+690" },
-        { name: "Tonga", timezone: "Pacific/Tongatapu", prefix: "+676" },
-        {
-          name: "Trinidad and Tobago",
-          timezone: "America/Port_of_Spain",
-          prefix: "+1-868",
-        },
-        { name: "Tunisia", timezone: "Africa/Tunis", prefix: "+216" },
-        { name: "Turkey", timezone: "Europe/Istanbul", prefix: "+90" },
-        { name: "Turkmenistan", timezone: "Asia/Ashgabat", prefix: "+993" },
-        { name: "Tuvalu", timezone: "Pacific/Funafuti", prefix: "+688" },
-        { name: "Uganda", timezone: "Africa/Kampala", prefix: "+256" },
-        { name: "Ukraine", timezone: "Europe/Kiev", prefix: "+380" },
-        {
-          name: "United Arab Emirates",
-          timezone: "Asia/Dubai",
-          prefix: "+971",
-        },
-        { name: "United Kingdom", timezone: "Europe/London", prefix: "+44" },
-        { name: "United States", timezone: "America/New_York", prefix: "+1" },
-        { name: "Uruguay", timezone: "America/Montevideo", prefix: "+598" },
-        { name: "Uzbekistan", timezone: "Asia/Tashkent", prefix: "+998" },
-        { name: "Vanuatu", timezone: "Pacific/Efate", prefix: "+678" },
-        { name: "Vatican City", timezone: "Europe/Vatican", prefix: "+379" },
-        { name: "Venezuela", timezone: "America/Caracas", prefix: "+58" },
-        { name: "Vietnam", timezone: "Asia/Ho_Chi_Minh", prefix: "+84" },
-        {
-          name: "Wallis and Futuna",
-          timezone: "Pacific/Wallis",
-          prefix: "+681",
-        },
-        { name: "Yemen", timezone: "Asia/Aden", prefix: "+967" },
-        { name: "Zambia", timezone: "Africa/Lusaka", prefix: "+260" },
-        { name: "Zimbabwe", timezone: "Africa/Harare", prefix: "+263" },
-      ];
-      function getCurrentTime(timeZone) {
+      const countries = [ { name: "Afghanistan", timezone: "Asia/Kabul", prefix: "+93", currency: "AFN", tld: ".af", }, { name: "Albania", timezone: "Europe/Tirane", prefix: "+355", currency: "ALL", tld: ".al", }, { name: "Algeria", timezone: "Africa/Algiers", prefix: "+213", currency: "DZD", tld: ".dz", }, { name: "Andorra", timezone: "Europe/Andorra", prefix: "+376", currency: "EUR", tld: ".ad", }, { name: "Angola", timezone: "Africa/Luanda", prefix: "+244", currency: "AOA", tld: ".ao", }, { name: "Argentina", timezone: "America/Argentina/Buenos_Aires", prefix: "+54", currency: "ARS", tld: ".ar", }, { name: "Armenia", timezone: "Asia/Yerevan", prefix: "+374", currency: "AMD", tld: ".am", }, { name: "Australia", timezone: "Australia/Sydney", prefix: "+61", currency: "AUD", tld: ".au", }, { name: "Austria", timezone: "Europe/Vienna", prefix: "+43", currency: "EUR", tld: ".at", }, { name: "Bahrain", timezone: "Asia/Bahrain", prefix: "+973", currency: "BHD", tld: ".bh", }, { name: "Bangladesh", timezone: "Asia/Dhaka", prefix: "+880", currency: "BDT", tld: ".bd", }, { name: "Barbados", timezone: "America/Barbados", prefix: "+1-246", currency: "BBD", tld: ".bb", }, { name: "Belarus", timezone: "Europe/Minsk", prefix: "+375", currency: "BYN", tld: ".by", }, { name: "Belgium", timezone: "Europe/Brussels", prefix: "+32", currency: "EUR", tld: ".be", }, { name: "Belize", timezone: "America/Belize", prefix: "+501", currency: "BZD", tld: ".bz", }, { name: "Benin", timezone: "Africa/Porto-Novo", prefix: "+229", currency: "XOF", tld: ".bj", }, { name: "Bhutan", timezone: "Asia/Thimphu", prefix: "+975", currency: "BTN", tld: ".bt", }, { name: "Botswana", timezone: "Africa/Gaborone", prefix: "+267", currency: "BWP", tld: ".bw", }, { name: "Brazil", timezone: "America/Sao_Paulo", prefix: "+55", currency: "BRL", tld: ".br", }, { name: "Brunei", timezone: "Asia/Brunei", prefix: "+673", currency: "BND", tld: ".bn", }, { name: "Burkina Faso", timezone: "Africa/Ouagadougou", prefix: "+226", currency: "BFW", tld: ".bf", }, { name: "Burundi", timezone: "Africa/Bujumbura", prefix: "+257", currency: "BIF", tld: ".bi", }, { name: "Cambodia", timezone: "Asia/Phnom_Penh", prefix: "+855", currency: "KHR", tld: ".kh", }, { name: "Cameroon", timezone: "Africa/Douala", prefix: "+237", currency: "XAF", tld: ".cm", }, { name: "Canada", timezone: "America/Toronto", prefix: "+1", currency: "CAD", tld: ".ca", }, { name: "Cape Verde", timezone: "Atlantic/Cape_Verde", prefix: "+238", currency: "CVE", tld: ".cv", }, { name: "Central African Republic", timezone: "Africa/Bangui", prefix: "+236", currency: "CDF", tld: ".cf", }, { name: "Chad", timezone: "Africa/N'Djamena", prefix: "+235", currency: "CDF", tld: ".td", }, { name: "Chile", timezone: "America/Santiago", prefix: "+56", currency: "CLP", tld: ".cl", }, { name: "China", timezone: "Asia/Shanghai", prefix: "+86", currency: "CNY", tld: ".cn", }, { name: "Colombia", timezone: "America/Bogota", prefix: "+57", currency: "COP", tld: ".co", }, { name: "Comoros", timezone: "Indian/Comoro", prefix: "+269", currency: "KMF", tld: ".km", }, { name: "Cuba", timezone: "America/Havana", prefix: "+53", currency: "CUP", tld: ".cu", }, { name: "Czech Republic", timezone: "Europe/Prague", prefix: "+420", currency: "CZK", tld: ".cz", }, { name: "Denmark", timezone: "Europe/Copenhagen", prefix: "+45", currency: "DKK", tld: ".dk", }, { name: "Djibouti", timezone: "Africa/Djibouti", prefix: "+253", currency: "DJF", tld: ".dj", }, { name: "Dominica", timezone: "America/Dominica", prefix: "+1-767", currency: "XCD", tld: ".dm", }, { name: "Ecuador", timezone: "America/Guayaquil", prefix: "+593", currency: "USD", tld: ".ec", }, { name: "Egypt", timezone: "Africa/Cairo", prefix: "+20", currency: "EGP", tld: ".eg", }, { name: "Eritrea", timezone: "Africa/Asmara", prefix: "+291", currency: "ERN", tld: ".er", }, { name: "Eswatini", timezone: "Africa/Mbabane", prefix: "+268", currency: "SZL", tld: ".sz", }, { name: "Ethiopia", timezone: "Africa/Addis_Ababa", prefix: "+251", currency: "ETB", tld: ".et", }, { name: "Fiji", timezone: "Pacific/Fiji", prefix: "+679", currency: "FJD", tld: ".fj", }, { name: "Finland", timezone: "Europe/Helsinki", prefix: "+358", currency: "EUR", tld: ".fi", }, { name: "France", timezone: "Europe/Paris", prefix: "+33", currency: "EUR", tld: ".fr", }, { name: "Gabon", timezone: "Africa/Libreville", prefix: "+241", currency: "GHS", tld: ".ga", }, { name: "Gambia", timezone: "Africa/Banjul", prefix: "+220", currency: "GMD", tld: ".gm", }, { name: "Georgia", timezone: "Asia/Tbilisi", prefix: "+995", currency: "GEL", tld: ".ge", }, { name: "Germany", timezone: "Europe/Berlin", prefix: "+49", currency: "EUR", tld: ".de", }, { name: "Greece", timezone: "Europe/Athens", prefix: "+30", currency: "EUR", tld: ".gr", }, { name: "Grenada", timezone: "America/Grenada", prefix: "+1-473", currency: "XCD", tld: ".gd", }, { name: "Guatemala", timezone: "America/Guatemala", prefix: "+502", currency: "GTQ", tld: ".gt", }, { name: "Guinea", timezone: "Africa/Conakry", prefix: "+224", currency: "GNF", tld: ".gn", }, { name: "Guinea-Bissau", timezone: "Africa/Bissau", prefix: "+245", currency: "GNF", tld: ".gw", }, { name: "Guyana", timezone: "America/Guyana", prefix: "+592", currency: "GYD", tld: ".gy", }, { name: "Haiti", timezone: "America/Port-au-Prince", prefix: "+509", currency: "HTG", tld: ".ht", }, { name: "Honduras", timezone: "America/Tegucigalpa", prefix: "+504", currency: "HNL", tld: ".hn", }, { name: "Hungary", timezone: "Europe/Budapest", prefix: "+36", currency: "HUF", tld: ".hu", }, { name: "Iceland", timezone: "Atlantic/Reykjavik", prefix: "+354", currency: "ISK", tld: ".is", }, { name: "India", timezone: "Asia/Kolkata", prefix: "+91", currency: "INR", tld: ".in", }, { name: "Indonesia", timezone: "Asia/Jakarta", prefix: "+62", currency: "IDR", tld: ".id", }, { name: "Iran", timezone: "Asia/Tehran", prefix: "+98", currency: "IRR", tld: ".ir", }, { name: "Iraq", timezone: "Asia/Baghdad", prefix: "+964", currency: "IQD", tld: ".iq", }, { name: "Ireland", timezone: "Europe/Dublin", prefix: "+353", currency: "EUR", tld: ".ie", }, { name: "Israel", timezone: "Asia/Jerusalem", prefix: "+972", currency: "ILS", tld: ".il", }, { name: "Italy", timezone: "Europe/Rome", prefix: "+39", currency: "EUR", tld: ".it", }, { name: "Jamaica", timezone: "America/Jamaica", prefix: "+1-876", currency: "JMD", tld: ".jm", }, { name: "Japan", timezone: "Asia/Tokyo", prefix: "+81", currency: "JPY", tld: ".jp", }, { name: "Jordan", timezone: "Asia/Amman", prefix: "+962", currency: "JOD", tld: ".jo", }, { name: "Kazakhstan", timezone: "Asia/Almaty", prefix: "+7", currency: "KZT", tld: ".kz", }, { name: "Kenya", timezone: "Africa/Nairobi", prefix: "+254", currency: "KES", tld: ".ke", }, { name: "Kiribati", timezone: "Pacific/Tarawa", prefix: "+686", currency: "AUD", tld: ".ki", }, { name: "Korea, North", timezone: "Asia/Pyongyang", prefix: "+850", currency: "KPW", tld: ".kp", }, { name: "Korea, South", timezone: "Asia/Seoul", prefix: "+82", currency: "KRW", tld: ".kr", }, { name: "Kuwait", timezone: "Asia/Kuwait", prefix: "+965", currency: "KWD", tld: ".kw", }, { name: "Kyrgyzstan", timezone: "Asia/Bishkek", prefix: "+996", currency: "KGS", tld: ".kg", }, { name: "Laos", timezone: "Asia/Vientiane", prefix: "+856", currency: "LAK", tld: ".la", }, { name: "Latvia", timezone: "Europe/Riga", prefix: "+371", currency: "EUR", tld: ".lv", }, { name: "Lebanon", timezone: "Asia/Beirut", prefix: "+961", currency: "LBP", tld: ".lb", }, { name: "Lesotho", timezone: "Africa/Maseru", prefix: "+266", currency: "LSL", tld: ".ls", }, { name: "Liberia", timezone: "Africa/Monrovia", prefix: "+231", currency: "LRD", tld: ".lr", }, { name: "Libya", timezone: "Africa/Tripoli", prefix: "+218", currency: "LYD", tld: ".ly", }, { name: "Liechtenstein", timezone: "Europe/Vaduz", prefix: "+423", currency: "CHF", tld: ".li", }, { name: "Lithuania", timezone: "Europe/Vilnius", prefix: "+370", currency: "EUR", tld: ".lt", }, { name: "Luxembourg", timezone: "Europe/Luxembourg", prefix: "+352", currency: "EUR", tld: ".lu", }, { name: "Madagascar", timezone: "Indian/Antananarivo", prefix: "+261", currency: "MGA", tld: ".mg", }, { name: "Malawi", timezone: "Africa/Blantyre", prefix: "+265", currency: "MWK", tld: ".mw", }, { name: "Malaysia", timezone: "Asia/Kuala_Lumpur", prefix: "+60", currency: "MYR", tld: ".my", }, { name: "Maldives", timezone: "Indian/Maldives", prefix: "+960", currency: "MVR", tld: ".mv", }, { name: "Mali", timezone: "Africa/Bamako", prefix: "+223", currency: "XOF", tld: ".ml", }, { name: "Malta", timezone: "Europe/Malta", prefix: "+356", currency: "EUR", tld: ".mt", }, { name: "Marshall Islands", timezone: "Pacific/Majuro", prefix: "+692", currency: "USD", tld: ".mh", }, { name: "Mauritania", timezone: "Africa/Nouakchott", prefix: "+222", currency: "MRU", tld: ".mr", }, { name: "Mauritius", timezone: "Indian/Mauritius", prefix: "+230", currency: "MUR", tld: ".mu", }, { name: "Mexico", timezone: "America/Mexico_City", prefix: "+52", currency: "MXN", tld: ".mx", }, { name: "Micronesia", timezone: "Pacific/Chuuk", prefix: "+691", currency: "USD", tld: ".fm", }, { name: "Moldova", timezone: "Europe/Chisinau", prefix: "+373", currency: "MDL", tld: ".md", }, { name: "Monaco", timezone: "Europe/Monaco", prefix: "+377", currency: "EUR", tld: ".mc", }, { name: "Mongolia", timezone: "Asia/Ulaanbaatar", prefix: "+976", currency: "MNT", tld: ".mn", }, { name: "Montenegro", timezone: "Europe/Podgorica", prefix: "+382", currency: "EUR", tld: ".me", }, { name: "Morocco", timezone: "Africa/Casablanca", prefix: "+212", currency: "MAD", tld: ".ma", }, { name: "Mozambique", timezone: "Africa/Maputo", prefix: "+258", currency: "MZN", tld: ".mz", }, { name: "Myanmar", timezone: "Asia/Yangon", prefix: "+95", currency: "MMK", tld: ".mm", }, { name: "Namibia", timezone: "Africa/Windhoek", prefix: "+264", currency: "NAD", tld: ".na", }, { name: "Nauru", timezone: "Pacific/Nauru", prefix: "+674", currency: "AUD", tld: ".nr", }, { name: "Nepal", timezone: "Asia/Kathmandu", prefix: "+977", currency: "NPR", tld: ".np", }, { name: "Netherlands", timezone: "Europe/Amsterdam", prefix: "+31", currency: "EUR", tld: ".nl", }, { name: "New Zealand", timezone: "Pacific/Auckland", prefix: "+64", currency: "NZD", tld: ".nz", }, { name: "Nicaragua", timezone: "America/Managua", prefix: "+505", currency: "NIO", tld: ".ni", }, { name: "Niger", timezone: "Africa/Niamey", prefix: "+227", currency: "NGN", tld: ".ne", }, { name: "Nigeria", timezone: "Africa/Lagos", prefix: "+234", currency: "NGN", tld: ".ng", }, { name: "North Macedonia", timezone: "Europe/Skopje", prefix: "+389", currency: "MKD", tld: ".mk", }, { name: "Norway", timezone: "Europe/Oslo", prefix: "+47", currency: "NOK", tld: ".no", }, { name: "Oman", timezone: "Asia/Muscat", prefix: "+968", currency: "OMR", tld: ".om", }, { name: "Pakistan", timezone: "Asia/Karachi", prefix: "+92", currency: "PKR", tld: ".pk", }, { name: "Palau", timezone: "Pacific/Palau", prefix: "+680", currency: "USD", tld: ".pw", }, { name: "Panama", timezone: "America/Panama", prefix: "+507", currency: "PAB", tld: ".pa", }, { name: "Papua New Guinea", timezone: "Pacific/Port_Moresby", prefix: "+675", currency: "PGK", tld: ".pg", }, { name: "Paraguay", timezone: "America/Asuncion", prefix: "+595", currency: "PYG", tld: ".py", }, { name: "Peru", timezone: "America/Lima", prefix: "+51", currency: "PEN", tld: ".pe", }, { name: "Philippines", timezone: "Asia/Manila", prefix: "+63", currency: "PHP", tld: ".ph", }, { name: "Poland", timezone: "Europe/Warsaw", prefix: "+48", currency: "PLN", tld: ".pl", }, { name: "Portugal", timezone: "Europe/Lisbon", prefix: "+351", currency: "EUR", tld: ".pt", }, { name: "Puerto Rico", timezone: "America/Puerto_Rico", prefix: "+1-787", currency: "USD", tld: ".pr", }, { name: "Qatar", timezone: "Asia/Qatar", prefix: "+974", currency: "QAR", tld: ".qa", }, { name: "Romania", timezone: "Europe/Bucharest", prefix: "+40", currency: "RON", tld: ".ro", }, { name: "Russia", timezone: "Europe/Moscow", prefix: "+7", currency: "RUB", tld: ".ru", }, { name: "Rwanda", timezone: "Africa/Kigali", prefix: "+250", currency: "RWF", tld: ".rw", }, { name: "Saint Kitts and Nevis", timezone: "America/St_Kitts", prefix: "+1-869", currency: "XCD", tld: ".kn", }, { name: "Saint Lucia", timezone: "America/St_Lucia", prefix: "+1-758", currency: "XCD", tld: ".lc", }, { name: "Saint Vincent and the Grenadines", timezone: "America/St_Vincent", prefix: "+1-784", currency: "XCD", tld: ".vc", }, { name: "Samoa", timezone: "Pacific/Apia", prefix: "+685", currency: "WST", tld: ".ws", }, { name: "San Marino", timezone: "Europe/San_Marino", prefix: "+378", currency: "EUR", tld: ".sm", }, { name: "Sao Tome and Principe", timezone: "Africa/Sao_Tome", prefix: "+239", currency: "STN", tld: ".st", }, { name: "Saudi Arabia", timezone: "Asia/Riyadh", prefix: "+966", currency: "SAR", tld: ".sa", }, { name: "Senegal", timezone: "Africa/Dakar", prefix: "+221", currency: "XOF", tld: ".sn", }, { name: "Serbia", timezone: "Europe/Belgrade", prefix: "+381", currency: "RSD", tld: ".rs", }, { name: "Seychelles", timezone: "Indian/Mahe", prefix: "+248", currency: "SCR", tld: ".sc", }, { name: "Sierra Leone", timezone: "Africa/Freetown", prefix: "+232", currency: "SLL", tld: ".sl", }, { name: "Singapore", timezone: "Asia/Singapore", prefix: "+65", currency: "SGD", tld: ".sg", }, { name: "Slovakia", timezone: "Europe/Bratislava", prefix: "+421", currency: "EUR", tld: ".sk", }, { name: "Slovenia", timezone: "Europe/Ljubljana", prefix: "+386", currency: "SIT", tld: ".si", }, { name: "Solomon Islands", timezone: "Pacific/Guadalcanal", prefix: "+677", currency: "SBD", tld: ".sb", }, { name: "Somalia", timezone: "Africa/Mogadishu", prefix: "+252", currency: "SOS", tld: ".so", }, { name: "South Africa", timezone: "Africa/Johannesburg", prefix: "+27", currency: "ZAR", tld: ".za", }, { name: "South Korea", timezone: "Asia/Seoul", prefix: "+82", currency: "KRW", tld: ".kr", }, { name: "South Sudan", timezone: "Africa/Juba", prefix: "+211", currency: "SSP", tld: ".ss", }, { name: "Spain", timezone: "Europe/Madrid", prefix: "+34", currency: "EUR", tld: ".es", }, { name: "Sri Lanka", timezone: "Asia/Colombo", prefix: "+94", currency: "LKR", tld: ".lk", }, { name: "Sudan", timezone: "Africa/Khartoum", prefix: "+249", currency: "SDG", tld: ".sd", }, { name: "Suriname", timezone: "America/Paramaribo", prefix: "+597", currency: "SRD", tld: ".sr", }, { name: "Sweden", timezone: "Europe/Stockholm", prefix: "+46", currency: "SEK", tld: ".se", }, { name: "Switzerland", timezone: "Europe/Zurich", prefix: "+41", currency: "CHF", tld: ".ch", }, { name: "Syria", timezone: "Asia/Damascus", prefix: "+963", currency: "SYP", tld: ".sy", }, { name: "Taiwan", timezone: "Asia/Taipei", prefix: "+886", currency: "TWD", tld: ".tw", }, { name: "Tajikistan", timezone: "Asia/Dushanbe", prefix: "+992", currency: "TJS", tld: ".tj", }, { name: "Tanzania", timezone: "Africa/Dar_es_Salaam", prefix: "+255", currency: "TZS", tld: ".tz", }, { name: "Thailand", timezone: "Asia/Bangkok", prefix: "+66", currency: "THB", tld: ".th", }, { name: "Timor-Leste", timezone: "Asia/Dili", prefix: "+670", currency: "USD", tld: ".tl", }, { name: "Togo", timezone: "Africa/Lome", prefix: "+228", currency: "XOF", tld: ".tg", }, { name: "Tokelau", timezone: "Pacific/Fakaofo", prefix: "+690", currency: "NZD", tld: ".tk", }, { name: "Tonga", timezone: "Pacific/Tongatapu", prefix: "+676", currency: "TOP", tld: ".to", }, { name: "Trinidad and Tobago", timezone: "America/Port_of_Spain", prefix: "+1-868", currency: "TTD", tld: ".tt", }, { name: "Tunisia", timezone: "Africa/Tunis", prefix: "+216", currency: "TND", tld: ".tn", }, { name: "Turkey", timezone: "Europe/Istanbul", prefix: "+90", currency: "TRY", tld: ".tr", }, { name: "Turkmenistan", timezone: "Asia/Ashgabat", prefix: "+993", currency: "TMT", tld: ".tm", }, { name: "Tuvalu", timezone: "Pacific/Funafuti", prefix: "+688", currency: "AUD", tld: ".tv", }, { name: "Uganda", timezone: "Africa/Kampala", prefix: "+256", currency: "UGX", tld: ".ug", }, { name: "Ukraine", timezone: "Europe/Kiev", prefix: "+380", currency: "UAH", tld: ".ua", }, { name: "United Arab Emirates", timezone: "Asia/Dubai", prefix: "+971", currency: "AED", tld: ".ae", }, { name: "United Kingdom", timezone: "Europe/London", prefix: "+44", currency: "GBP", tld: ".uk", }, { name: "United States", timezone: "America/New_York", prefix: "+1", currency: "USD", tld: ".us", }, { name: "Uruguay", timezone: "America/Montevideo", prefix: "+598", currency: "UYU", tld: ".uy", }, { name: "Uzbekistan", timezone: "Asia/Tashkent", prefix: "+998", currency: "UZS", tld: ".uz", }, { name: "Vanuatu", timezone: "Pacific/Efate", prefix: "+678", currency: "VUV", tld: ".vu", }, { name: "Vatican City", timezone: "Europe/Vatican", prefix: "+379", currency: "EUR", tld: ".va", }, { name: "Venezuela", timezone: "America/Caracas", prefix: "+58", currency: "VES", tld: ".ve", }, { name: "Vietnam", timezone: "Asia/Ho_Chi_Minh", prefix: "+84", currency: "VND", tld: ".vn", }, { name: "Wallis and Futuna", timezone: "Pacific/Wallis", prefix: "+681", }, { name: "Yemen", timezone: "Asia/Aden", prefix: "+967", }, { name: "Zambia", timezone: "Africa/Lusaka", prefix: "+260", }, { name: "Zimbabwe", timezone: "Africa/Harare", prefix: "+263", }, ];
+
+      function getCurrentTime(timeZone, time = new Date()) {
         try {
-          return new Intl.DateTimeFormat("en-US", {
-            timeStyle: "medium",
-            timeZone,
-          }).format(new Date());
-        } catch {
+          return new Intl.DateTimeFormat("fr-FR", { timeStyle: "medium", timeZone, }).format(time);
+        } catch(error) { 
           return "??? " + timeZone;
         }
       }
@@ -359,24 +64,37 @@
       function populateTable() {
         const tableBody = document.getElementById("countryTable");
         countries
-          .reduce((acc, curr) => {  // remove duplicates
-            if (!acc.some((item) => item.name === curr.name)) acc.push(curr);   
+          .reduce((acc, curr) => {
+            if (!acc.some((item) => item.name === curr.name)) acc.push(curr);
             return acc;
           }, [])
           .sort((a, b) => a.name.localeCompare(b.name))
           .forEach((country) => {
             const row = document.createElement("tr");
+            row.dataset.zone = country.timezone
             row.innerHTML = `
                     <td>${country.name}</td>
+                    <td><time>${getCurrentTime(country.timezone)}</time></td>
                     <td>${country.prefix}</td>
-                    <td>${getCurrentTime(country.timezone)}</td>
-                `; 
+                    <td>${country.currency}</td>
+                    <td>${country.tld}</td>
+                `;
             tableBody.appendChild(row);
           });
       }
 
       // Populate the table when the page loads
       populateTable();
+
+      const rangeInput = document.getElementById('current-time');
+      rangeInput.value = new Date().toISOString().split('.')[0]
+      rangeInput.addEventListener('change', event=>{
+        document.querySelectorAll('[data-zone]').forEach(el => {
+          const zone = el.dataset.zone;
+          const nextTime = getCurrentTime(zone, new Date(event.target.value));
+          el.querySelector('time').innerHTML = nextTime
+        })
+      })
     </script>
   </body>
 </html>
