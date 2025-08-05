@@ -1,15 +1,16 @@
 set -ex
 
 PROJECT=aero
-USER=lipp
-SERVER=lipp.local 
+USER=app
+SERVER=ssh-cumin.kapochamo.com 
 
-scp index.html nginx.conf   $USER@$SERVER:/home/$USER/projects/$PROJECT/
+ssh-add ~/.ssh/garnet-prod.pem ~/.ssh/cumin.pem
+
+scp index.html nginx.conf $USER@$SERVER:/home/$USER/$PROJECT/
 ssh $USER@$SERVER "sudo nginx -t && sudo nginx -s reload"
 
 
-# curl -L pantone.kapochamo.com | head 
 # Create a symlink on the server: 
-#  sudo ln -fs /home/lipp/projects/pantone/nginx.conf /etc/nginx/conf.d/pantone.kapochamo.com.conf
+#   ssh $USER@$SERVER "sudo ln -sf /home/$USER/$PROJECT/nginx.conf /etc/nginx/conf.d/"
 # Restart NGINX
 #   sudo nginx -t && sudo nginx -s reload
