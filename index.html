@@ -257,10 +257,35 @@
         { name: 'Vancouver', timezone: 'America/Vancouver' },
       ];
 
-      const regionOrder = ['Europe', 'America', 'Africa', 'Asia', 'Australia', 'Pacific', 'Indian', 'Atlantic'];
+      const southAmericaZones = new Set([
+        'America/Argentina/Buenos_Aires','America/Sao_Paulo','America/Santiago',
+        'America/Bogota','America/Guayaquil','America/Guyana','America/Asuncion',
+        'America/Lima','America/Paramaribo','America/Montevideo','America/Caracas',
+      ]);
+      const europeWET = new Set([
+        'Europe/London','Europe/Dublin','Europe/Lisbon','Atlantic/Reykjavik',
+      ]);
+      const europeEET = new Set([
+        'Europe/Athens','Europe/Bucharest','Europe/Helsinki','Europe/Kiev',
+        'Europe/Riga','Europe/Vilnius','Europe/Chisinau',
+      ]);
+      const europeFar = new Set([
+        'Europe/Moscow','Europe/Minsk','Europe/Istanbul',
+      ]);
+
+      const regionOrder = [
+        'Europe_CET','Europe_WET','Europe_EET','Europe_3',
+        'North_America','South_America',
+        'Asia','Africa',
+        'Australia','Pacific','Indian','Atlantic',
+      ];
       const regionLabels = {
-        'Europe': 'Europe',
-        'America': 'Americas',
+        'Europe_WET': 'Europe (UTC+0)',
+        'Europe_CET': 'Europe (UTC+1)',
+        'Europe_EET': 'Europe (UTC+2)',
+        'Europe_3': 'Europe (UTC+3)',
+        'North_America': 'North America',
+        'South_America': 'South America',
         'Africa': 'Africa',
         'Asia': 'Asia',
         'Australia': 'Oceania',
@@ -270,6 +295,12 @@
       };
 
       function getRegion(timezone) {
+        if (europeWET.has(timezone)) return 'Europe_WET';
+        if (europeEET.has(timezone)) return 'Europe_EET';
+        if (europeFar.has(timezone)) return 'Europe_3';
+        if (timezone.startsWith('Europe/')) return 'Europe_CET';
+        if (southAmericaZones.has(timezone)) return 'South_America';
+        if (timezone.startsWith('America/')) return 'North_America';
         return timezone.split('/')[0];
       }
 
