@@ -278,11 +278,16 @@
       const europeFar = new Set([
         'Europe/Moscow','Europe/Minsk','Europe/Istanbul',
       ]);
+      const middleEastZones = new Set([
+        'Asia/Bahrain','Asia/Baghdad','Asia/Riyadh','Asia/Kuwait','Asia/Qatar',
+        'Asia/Dubai','Asia/Muscat','Asia/Aden','Asia/Jerusalem','Asia/Amman',
+        'Asia/Beirut','Asia/Damascus','Asia/Tehran',
+      ]);
 
       const regionOrder = [
         'Europe_CET','Europe_WET','Europe_EET','Europe_3',
         'North_America','South_America',
-        'Asia','Africa',
+        'Middle_East','Asia','Africa',
         'Australia','Pacific','Indian','Atlantic',
       ];
       const regionLabels = {
@@ -292,6 +297,7 @@
         'Europe_3': 'Europe (UTC+3)',
         'North_America': 'North America',
         'South_America': 'South America',
+        'Middle_East': 'Middle East',
         'Africa': 'Africa',
         'Asia': 'Asia',
         'Australia': 'Oceania',
@@ -307,6 +313,7 @@
         if (timezone.startsWith('Europe/')) return 'Europe_CET';
         if (southAmericaZones.has(timezone)) return 'South_America';
         if (timezone.startsWith('America/')) return 'North_America';
+        if (middleEastZones.has(timezone)) return 'Middle_East';
         return timezone.split('/')[0];
       }
 
