@@ -54,6 +54,7 @@
         border-collapse: separate;
         border-spacing: 0;
         table-layout: fixed;
+        width: 1025px;
       }
       #tz-table thead th {
         position: sticky;
@@ -61,12 +62,14 @@
         z-index: 1;
         background-color: #f4f4f4;
       }
+      #tz-table thead th.working-hour {
+        background-color: #d4edda;
+      }
       #tz-table th,
       #tz-table td {
         padding: 4px 6px;
         text-align: center;
         font-size: 13px;
-        width: 32px;
       }
       #tz-table th:first-child,
       #tz-table td:first-child {
@@ -117,7 +120,7 @@
           <input type="number" id="work-end" value="17" min="0" max="23" />
         </label>
       </form>
-      <div style="overflow-x: auto;">
+      <div style="overflow: auto; max-height: 80vh;">
         <table id="tz-table">
           <thead>
             <tr><th>Timezone</th></tr>
@@ -372,6 +375,7 @@
           const th = document.createElement('th');
           th.textContent = h;
           if (h === nlHour) th.classList.add('current-hour');
+          if (isWorkingHour(h, workStart, workEnd)) th.classList.add('working-hour');
           th.style.cursor = 'pointer';
           th.addEventListener('click', () => setNlHour(h));
           thead.appendChild(th);
