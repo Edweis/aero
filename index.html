@@ -8,7 +8,6 @@
       body {
         font-family: Arial, sans-serif;
         margin: 20px;
-        padding-top: 20px;
       }
       table {
         width: 100%;
@@ -93,16 +92,6 @@
   </head>
   <body>
     <h1>Countries, Phone Prefixes, and Current Time</h1>
-    <div style="position: fixed; top: 0px; background-color: lightgreen; padding: 10px;" >
-      <label>
-        Current ISO time
-        <input id="current-time" type="datetime-local" />
-      </label>
-      <label data-zone="Europe/Amsterdam">
-        Netherland time
-        <time></time>
-      </label>
-    </div>
     <section id="tz-comparison">
       <h2>Timezone Comparison</h2>
       <form id="working-hours-form">
@@ -249,26 +238,35 @@
       }
 
       function getSelectedTimezones() {
-        const selected = [];
-        document.querySelectorAll('#countryTable tr[aria-selected="true"]').forEach(row => {
-          const name = row.querySelector('td').textContent;
-          const timezone = row.dataset.zone;
-          selected.push({ name, timezone });
-        });
         const seen = new Set();
-        const deduped = selected.filter(item => {
+        const all = countries.filter(item => {
           if (seen.has(item.timezone)) return false;
           seen.add(item.timezone);
           return true;
         });
-        const withoutNL = deduped.filter(item => item.timezone !== 'Europe/Amsterdam');
+        const withoutNL = all.filter(item => item.timezone !== 'Europe/Amsterdam');
         return [{ name: 'Netherlands', timezone: 'Europe/Amsterdam' }, ...withoutNL];
       }
 
+      let referenceDate = new Date();
+
+      function setNlHour(nlHour) {
+        const d = new Date(referenceDate);
+        const currentNlHour = getHourInTimezone('Europe/Amsterdam', d);
+        d.setHours(d.getHours() + (nlHour - currentNlHour));
+        referenceDate = d;
+        updateAll();
+      }
+
+      function updateAll() {
+        document.querySelectorAll('[data-zone]').forEach(el => {
+          const zone = el.dataset.zone;
+          el.querySelector('time').innerHTML = getCurrentTime(zone, referenceDate);
+        });
+        renderComparisonTable();
+      }
+
       function renderComparisonTable() {
-        const inputValue = document.getElementById('current-time').value;
-        if (!inputValue) return;
-        const referenceDate = new Date(inputValue);
         const workStart = parseInt(document.getElementById('work-start').value, 10);
         const workEnd = parseInt(document.getElementById('work-end').value, 10);
         const nlHour = getHourInTimezone('Europe/Amsterdam', referenceDate);
@@ -280,6 +278,8 @@
           const th = document.createElement('th');
           th.textContent = h;
           if (h === nlHour) th.classList.add('current-hour');
+          th.style.cursor = 'pointer';
+          th.addEventListener('click', () => setNlHour(h));
           thead.appendChild(th);
         }
 
@@ -300,6 +300,8 @@
             td.textContent = localHour;
             if (nlH === nlHour) td.classList.add('current-hour');
             if (isWorkingHour(localHour, workStart, workEnd)) td.classList.add('working-hour');
+            td.style.cursor = 'pointer';
+            td.addEventListener('click', () => setNlHour(nlH));
             row.appendChild(td);
           }
           tbody.appendChild(row);
@@ -309,20 +311,9 @@
       // Populate the table when the page loads
       populateTable();
 
-      const utcDate = new Date()
-      const rangeInput = document.getElementById('current-time');
-      rangeInput.value = getLocalDate().toISOString().slice(0, 16)
-      rangeInput.addEventListener('change', event=>{
-        document.querySelectorAll('[data-zone]').forEach(el => {
-          const zone = el.dataset.zone;
-          const nextTime = getCurrentTime(zone, new Date(event.target.value));
-          el.querySelector('time').innerHTML = nextTime
-        })
-        renderComparisonTable()
-      })
       document.getElementById('work-start').addEventListener('change', renderComparisonTable);
       document.getElementById('work-end').addEventListener('change', renderComparisonTable);
-      rangeInput.dispatchEvent(new Event('change'))
+      updateAll();
     </script>
   </body>
 </html>
