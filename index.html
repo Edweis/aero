@@ -80,6 +80,12 @@
         background-color: #a3d9a5;
         font-weight: bold;
       }
+      #tz-table .region-header th {
+        background-color: #e9ecef;
+        text-align: left;
+        font-size: 12px;
+        padding: 4px 6px;
+      }
       .timezone-card {
         border: 1px solid #ddd;
         padding: 12px;
@@ -250,6 +256,22 @@
         { name: 'Vancouver', timezone: 'America/Vancouver' },
       ];
 
+      const regionOrder = ['Europe', 'America', 'Africa', 'Asia', 'Australia', 'Pacific', 'Indian', 'Atlantic'];
+      const regionLabels = {
+        'Europe': 'Europe',
+        'America': 'Americas',
+        'Africa': 'Africa',
+        'Asia': 'Asia',
+        'Australia': 'Oceania',
+        'Pacific': 'Oceania',
+        'Indian': 'Indian Ocean',
+        'Atlantic': 'Atlantic',
+      };
+
+      function getRegion(timezone) {
+        return timezone.split('/')[0];
+      }
+
       function getSelectedTimezones() {
         const pinnedZones = new Set(pinnedTimezones.map(p => p.timezone));
         const seen = new Set();
@@ -259,7 +281,22 @@
           seen.add(item.timezone);
           return true;
         });
-        return [...pinnedTimezones, ...rest];
+
+        const grouped = {};
+        rest.forEach(item => {
+          const region = getRegion(item.timezone);
+          if (!grouped[region]) grouped[region] = [];
+          grouped[region].push(item);
+        });
+
+        const result = [{ header: 'Pinned' }, ...pinnedTimezones];
+        regionOrder.forEach(region => {
+          if (grouped[region]) {
+            result.push({ header: regionLabels[region] || region });
+            result.push(...grouped[region]);
+          }
+        });
+        return result;
       }
 
       let referenceDate = new Date();
@@ -299,7 +336,18 @@
 
         const tbody = document.getElementById('tz-table-body');
         tbody.innerHTML = '';
-        timezones.forEach(({ name, timezone }) => {
+        timezones.forEach(item => {
+          if (item.header) {
+            const row = document.createElement('tr');
+            row.classList.add('region-header');
+            const th = document.createElement('th');
+            th.colSpan = 25;
+            th.textContent = item.header;
+            row.appendChild(th);
+            tbody.appendChild(row);
+            return;
+          }
+          const { name, timezone } = item;
           const row = document.createElement('tr');
           const labelCell = document.createElement('td');
           labelCell.textContent = name;
