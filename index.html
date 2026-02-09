@@ -38,7 +38,6 @@
         max-width: 700px;
       }
       #tz-comparison {
-        max-width: 1100px;
         margin-bottom: 20px;
       }
       #working-hours-form {
@@ -237,15 +236,30 @@
         return hour >= start || hour < end;
       }
 
+      const pinnedTimezones = [
+        { name: 'Netherlands', timezone: 'Europe/Amsterdam' },
+        { name: 'New York', timezone: 'America/New_York' },
+        { name: 'Los Angeles', timezone: 'America/Los_Angeles' },
+        { name: 'Chicago', timezone: 'America/Chicago' },
+        { name: 'Houston', timezone: 'America/Chicago' },
+        { name: 'Phoenix', timezone: 'America/Phoenix' },
+        { name: 'Sydney', timezone: 'Australia/Sydney' },
+        { name: 'Melbourne', timezone: 'Australia/Melbourne' },
+        { name: 'São Paulo', timezone: 'America/Sao_Paulo' },
+        { name: 'Toronto', timezone: 'America/Toronto' },
+        { name: 'Vancouver', timezone: 'America/Vancouver' },
+      ];
+
       function getSelectedTimezones() {
+        const pinnedZones = new Set(pinnedTimezones.map(p => p.timezone));
         const seen = new Set();
-        const all = countries.filter(item => {
+        const rest = countries.filter(item => {
+          if (pinnedZones.has(item.timezone)) return false;
           if (seen.has(item.timezone)) return false;
           seen.add(item.timezone);
           return true;
         });
-        const withoutNL = all.filter(item => item.timezone !== 'Europe/Amsterdam');
-        return [{ name: 'Netherlands', timezone: 'Europe/Amsterdam' }, ...withoutNL];
+        return [...pinnedTimezones, ...rest];
       }
 
       let referenceDate = new Date();
