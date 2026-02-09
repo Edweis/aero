@@ -38,6 +38,50 @@
         margin-bottom: 20px;
         max-width: 700px;
       }
+      #tz-comparison {
+        max-width: 1100px;
+        margin-bottom: 20px;
+      }
+      #working-hours-form {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      #working-hours-form input[type="number"] {
+        width: 50px;
+      }
+      #tz-table {
+        max-width: none;
+        border-collapse: collapse;
+      }
+      #tz-table th,
+      #tz-table td {
+        padding: 4px 6px;
+        text-align: center;
+        font-size: 13px;
+        min-width: 32px;
+      }
+      #tz-table th:first-child,
+      #tz-table td:first-child {
+        text-align: left;
+        white-space: nowrap;
+        min-width: 160px;
+      }
+      #tz-table th.current-hour {
+        background-color: #fff3cd;
+        font-weight: bold;
+      }
+      #tz-table td.current-hour {
+        background-color: #fff3cd;
+      }
+      #tz-table td.working-hour {
+        background-color: #d4edda;
+      }
+      #tz-table td.working-hour.current-hour {
+        background-color: #a3d9a5;
+        font-weight: bold;
+      }
       .timezone-card {
         border: 1px solid #ddd;
         padding: 12px;
@@ -59,6 +103,27 @@
         <time></time>
       </label>
     </div>
+    <section id="tz-comparison">
+      <h2>Timezone Comparison</h2>
+      <form id="working-hours-form">
+        <label>
+          Work start
+          <input type="number" id="work-start" value="8" min="0" max="23" />
+        </label>
+        <label>
+          Work end
+          <input type="number" id="work-end" value="17" min="0" max="23" />
+        </label>
+      </form>
+      <div style="overflow-x: auto;">
+        <table id="tz-table">
+          <thead>
+            <tr><th>Timezone</th></tr>
+          </thead>
+          <tbody id="tz-table-body"></tbody>
+        </table>
+      </div>
+    </section>
     <main>
       <table>
         <thead>
@@ -149,6 +214,7 @@
               const rowEl = event.target.closest('tr')
               const active = rowEl.ariaSelected === 'true';
               rowEl.ariaSelected=!active
+              renderComparisonTable()
             })
             row.dataset.zone = country.timezone
             row.innerHTML = `
@@ -167,6 +233,79 @@
         const timezoneOffset = now.getTimezoneOffset() * 60000; // Convert minutes to milliseconds
         return new Date(now.getTime() - timezoneOffset);
       }
+      function getHourInTimezone(timezone, referenceDate) {
+        const formatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: timezone,
+          hour: 'numeric',
+          hour12: false,
+        });
+        const hour = parseInt(formatter.format(referenceDate), 10);
+        return hour === 24 ? 0 : hour;
+      }
+
+      function isWorkingHour(hour, start, end) {
+        if (start <= end) return hour >= start && hour < end;
+        return hour >= start || hour < end;
+      }
+
+      function getSelectedTimezones() {
+        const selected = [];
+        document.querySelectorAll('#countryTable tr[aria-selected="true"]').forEach(row => {
+          const name = row.querySelector('td').textContent;
+          const timezone = row.dataset.zone;
+          selected.push({ name, timezone });
+        });
+        const seen = new Set();
+        const deduped = selected.filter(item => {
+          if (seen.has(item.timezone)) return false;
+          seen.add(item.timezone);
+          return true;
+        });
+        const withoutNL = deduped.filter(item => item.timezone !== 'Europe/Amsterdam');
+        return [{ name: 'Netherlands', timezone: 'Europe/Amsterdam' }, ...withoutNL];
+      }
+
+      function renderComparisonTable() {
+        const inputValue = document.getElementById('current-time').value;
+        if (!inputValue) return;
+        const referenceDate = new Date(inputValue);
+        const workStart = parseInt(document.getElementById('work-start').value, 10);
+        const workEnd = parseInt(document.getElementById('work-end').value, 10);
+        const nlHour = getHourInTimezone('Europe/Amsterdam', referenceDate);
+        const timezones = getSelectedTimezones();
+
+        const thead = document.querySelector('#tz-table thead tr');
+        thead.innerHTML = '<th>Timezone</th>';
+        for (let h = 0; h < 24; h++) {
+          const th = document.createElement('th');
+          th.textContent = h;
+          if (h === nlHour) th.classList.add('current-hour');
+          thead.appendChild(th);
+        }
+
+        const tbody = document.getElementById('tz-table-body');
+        tbody.innerHTML = '';
+        timezones.forEach(({ name, timezone }) => {
+          const row = document.createElement('tr');
+          const labelCell = document.createElement('td');
+          labelCell.textContent = name;
+          row.appendChild(labelCell);
+
+          const targetCurrentHour = getHourInTimezone(timezone, referenceDate);
+          const offset = ((targetCurrentHour - nlHour) % 24 + 24) % 24;
+
+          for (let nlH = 0; nlH < 24; nlH++) {
+            const td = document.createElement('td');
+            const localHour = (nlH + offset) % 24;
+            td.textContent = localHour;
+            if (nlH === nlHour) td.classList.add('current-hour');
+            if (isWorkingHour(localHour, workStart, workEnd)) td.classList.add('working-hour');
+            row.appendChild(td);
+          }
+          tbody.appendChild(row);
+        });
+      }
+
       // Populate the table when the page loads
       populateTable();
 
@@ -179,7 +318,10 @@
           const nextTime = getCurrentTime(zone, new Date(event.target.value));
           el.querySelector('time').innerHTML = nextTime
         })
+        renderComparisonTable()
       })
+      document.getElementById('work-start').addEventListener('change', renderComparisonTable);
+      document.getElementById('work-end').addEventListener('change', renderComparisonTable);
       rangeInput.dispatchEvent(new Event('change'))
     </script>
   </body>
