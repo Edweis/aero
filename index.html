@@ -91,6 +91,20 @@
         background-color: #a3d9a5;
         font-weight: bold;
       }
+      #tz-table tr.highlighted-row td {
+        background-color: #cfe2ff;
+      }
+      #tz-table tr.highlighted-row td.current-hour {
+        background-color: #a0c4ff;
+        font-weight: bold;
+      }
+      #tz-table tr.highlighted-row td.working-hour {
+        background-color: #a0c4ff;
+      }
+      #tz-table tr.highlighted-row td.working-hour.current-hour {
+        background-color: #7aadff;
+        font-weight: bold;
+      }
       #tz-table .region-header th {
         background-color: #e9ecef;
         text-align: left;
@@ -348,6 +362,7 @@
       }
 
       let referenceDate = new Date();
+      let highlightedTimezone = null;
 
       function setNlHour(nlHour) {
         const d = new Date(referenceDate);
@@ -398,6 +413,7 @@
           }
           const { name, timezone } = item;
           const row = document.createElement('tr');
+          if (highlightedTimezone === timezone) row.classList.add('highlighted-row');
           const labelCell = document.createElement('td');
           labelCell.textContent = name;
           row.appendChild(labelCell);
@@ -412,7 +428,10 @@
             if (nlH === nlHour) td.classList.add('current-hour');
             if (isWorkingHour(localHour, workStart, workEnd)) td.classList.add('working-hour');
             td.style.cursor = 'pointer';
-            td.addEventListener('click', () => setNlHour(nlH));
+            td.addEventListener('click', () => {
+              highlightedTimezone = highlightedTimezone === timezone ? null : timezone;
+              setNlHour(nlH);
+            });
             row.appendChild(td);
           }
           tbody.appendChild(row);
