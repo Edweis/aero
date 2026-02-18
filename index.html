@@ -358,6 +358,29 @@
             result.push(...grouped[region]);
           }
         });
+
+        // Add all IANA timezones not already shown
+        const shownZones = new Set(pinnedTimezones.map(p => p.timezone));
+        rest.forEach(item => shownZones.add(item.timezone));
+
+        const allIana = Intl.supportedValuesOf('timeZone');
+        const extraGrouped = {};
+        allIana.forEach(tz => {
+          if (shownZones.has(tz)) return;
+          const region = tz.split('/')[0];
+          if (!extraGrouped[region]) extraGrouped[region] = [];
+          extraGrouped[region].push({ name: tz, timezone: tz });
+        });
+
+        const extraRegionOrder = Object.keys(extraGrouped).sort();
+        if (extraRegionOrder.length > 0) {
+          result.push({ header: 'All Timezones' });
+          extraRegionOrder.forEach(region => {
+            result.push({ header: region });
+            result.push(...extraGrouped[region]);
+          });
+        }
+
         return result;
       }
 
